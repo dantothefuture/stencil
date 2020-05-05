@@ -1,7 +1,8 @@
 import { EventInitDict, EventSpy, ScreenshotDiff, ScreenshotOptions } from '@stencil/core/internal';
 import * as puppeteer from 'puppeteer';
+import { NewBrowserPageOptions } from './puppeteer-browser';
 
-export interface NewE2EPageOptions extends puppeteer.NavigationOptions {
+export interface NewE2EPageOptions extends puppeteer.NavigationOptions, NewBrowserPageOptions {
   url?: string;
   html?: string;
   failOnConsoleError?: boolean;

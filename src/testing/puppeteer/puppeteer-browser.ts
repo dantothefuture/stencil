@@ -93,6 +93,15 @@ export async function disconnectBrowser(browser: puppeteer.Browser) {
   }
 }
 
-export function newBrowserPage(browser: puppeteer.Browser) {
-  return browser.newPage();
+export interface NewBrowserPageOptions {
+  /**
+   * If `true`, creates a new page in a separate incognito browsing context.
+   * @see https://pptr.dev/#?product=Puppeteer&version=v3.0.2&show=api-browsercreateincognitobrowsercontext
+   */
+  incognito?: boolean;
+}
+
+export async function newBrowserPage(browser: puppeteer.Browser, options?: NewBrowserPageOptions) {
+  const context = options?.incognito ? await browser.createIncognitoBrowserContext() : browser.defaultBrowserContext();
+  return context.newPage();
 }
