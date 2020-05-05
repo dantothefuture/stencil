@@ -1,5 +1,5 @@
 import { E2EProcessEnv, JestEnvironmentGlobal } from '@stencil/core/internal';
-import { connectBrowser, disconnectBrowser, newBrowserPage } from '../puppeteer/puppeteer-browser';
+import { connectBrowser, disconnectBrowser, newBrowserPage, NewBrowserPageOptions } from '../puppeteer/puppeteer-browser';
 
 export function createJestPuppeteerEnvironment() {
   const NodeEnvironment = require('jest-environment-node');
@@ -19,13 +19,13 @@ export function createJestPuppeteerEnvironment() {
       }
     }
 
-    async newPuppeteerPage() {
+    async newPuppeteerPage(options: NewBrowserPageOptions = {}) {
       if (!this.browser) {
         // load the browser and page on demand
         this.browser = await connectBrowser();
       }
 
-      const page = await newBrowserPage(this.browser);
+      const page = await newBrowserPage(this.browser, options);
       this.pages.push(page);
       const env: E2EProcessEnv = process.env;
       if (typeof env.__STENCIL_DEFAULT_TIMEOUT__ === 'string') {
@@ -35,7 +35,19 @@ export function createJestPuppeteerEnvironment() {
     }
 
     async closeOpenPages() {
-      await Promise.all(this.pages.map(page => page.close()));
+      await Promise.all(
+        this.pages.map(async page => {
+          const context = page.browserContext();
+          const pages = await context.pages();
+
+          if (context.isIncognito() && pages.length === 1) {
+            await context.close();
+          } else if (!page.isClosed()) {
+            await page.close();
+          }
+        }),
+      );
+
       this.pages.length = 0;
     }
 
