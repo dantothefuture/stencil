@@ -4,6 +4,7 @@ import { find, findAll } from './puppeteer-element';
 import { initPageEvents, waitForEvent } from './puppeteer-events';
 import { initPageScreenshot } from './puppeteer-screenshot';
 import * as puppeteer from 'puppeteer';
+import { NewBrowserPageOptions } from './puppeteer-browser';
 
 declare const global: JestEnvironmentGlobal;
 
@@ -13,7 +14,8 @@ export async function newE2EPage(opts: NewE2EPageOptions = {}): Promise<E2EPage>
     throw new Error(`newE2EPage() is only available from E2E tests, and ran with the --e2e cmd line flag.`);
   }
 
-  const page: E2EPageInternal = await global.__NEW_TEST_PAGE__();
+  const pageOpts: NewBrowserPageOptions = { context: opts.context };
+  const page: E2EPageInternal = await global.__NEW_TEST_PAGE__(pageOpts);
   const diagnostics: PageDiagnostic[] = [];
   try {
     page._e2eElements = [];
@@ -240,7 +242,7 @@ async function e2eSetContent(page: E2EPageInternal, html: string, options: puppe
     } else {
       interceptedRequest.continue();
     }
-  }
+  };
 
   page.on('request', interceptedReqCallback);
 
