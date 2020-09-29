@@ -1,5 +1,6 @@
 import type { E2EProcessEnv, EmulateConfig, HostElement, JestEnvironmentGlobal } from '@stencil/core/internal';
 import type { E2EPage, E2EPageInternal, FindSelector, NewE2EPageOptions, PageDiagnostic } from './puppeteer-declarations';
+import { NewBrowserPageOptions } from './puppeteer-browser';
 import { find, findAll } from './puppeteer-element';
 import { initPageEvents, waitForEvent } from './puppeteer-events';
 import { initPageScreenshot } from './puppeteer-screenshot';
@@ -13,7 +14,8 @@ export async function newE2EPage(opts: NewE2EPageOptions = {}): Promise<E2EPage>
     throw new Error(`newE2EPage() is only available from E2E tests, and ran with the --e2e cmd line flag.`);
   }
 
-  const page: E2EPageInternal = await global.__NEW_TEST_PAGE__();
+  const pageOpts: NewBrowserPageOptions = { context: opts.context };
+  const page: E2EPageInternal = await global.__NEW_TEST_PAGE__(pageOpts);
   const diagnostics: PageDiagnostic[] = [];
   try {
     page._e2eElements = [];

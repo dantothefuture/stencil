@@ -1,3 +1,5 @@
+import { NewBrowserPageOptions } from '../testing/puppeteer/puppeteer-browser';
+
 import type {
   BuildEvents,
   BuildLog,
@@ -2182,7 +2184,7 @@ export interface EventInitDict {
 }
 
 export interface JestEnvironmentGlobal {
-  __NEW_TEST_PAGE__: () => Promise<any>;
+  __NEW_TEST_PAGE__: (options?: NewBrowserPageOptions) => Promise<any>;
   __CLOSE_OPEN_PAGES__: () => Promise<any>;
   Context: any;
   loadTestWindow: (testWindow: any) => Promise<void>;
